@@ -1,6 +1,20 @@
-# IoT Environmental Monitoring Simulation
+# IoT Environmental Monitoring System
 
-This project simulates IoT sensor data for environmental monitoring systems. It generates realistic data for multiple sensor types to simulate a comprehensive environmental monitoring setup.
+This project consists of two main components:
+1. A data simulation system that generates realistic IoT sensor data for environmental monitoring
+2. A smart contract for storing and managing the sensor data on a blockchain
+
+## Project Structure
+
+```
+.
+├── data_simulation/          # IoT data generation components
+│   ├── IoT_Data_Generation.ipynb
+│   └── iot_data.csv
+├── smart_contract/          # Blockchain storage components
+│   └── IoTDataStorage.sol
+└── README.md
+```
 
 ## Sensor Types
 
@@ -28,23 +42,33 @@ The script generates 24 hours of data at 5-minute intervals, resulting in 288 re
 - Realistic value ranges for each measurement
 - Timestamps for each reading
 
-## File Structure
+## Data Simulation Component
 
-- `iot_sensor_data.py` - Main script for generating sensor data
-- `iot_data.csv` - Generated sensor data output
+The data simulation is implemented in a Jupyter Notebook that generates realistic IoT sensor data.
 
-## Requirements
+### Requirements
 
 - Python 3.x
+- Jupyter Notebook
 - pandas
 - numpy
 
-## Usage
+### Sensor Types Simulated
 
-To generate new sensor data:
+### Usage
 
-```bash
-python iot_sensor_data.py
-```
+1. Open `data_simulation/IoT_Data_Generation.ipynb` in Jupyter Notebook
+2. Run the notebook cells to generate new sensor data
+3. The data will be saved to `data_simulation/iot_data.csv`
 
-This will create a new `iot_data.csv` file with simulated sensor readings.
+## Smart Contract Component
+
+The `IoTDataStorage.sol` contract provides blockchain storage for the IoT sensor data. It is designed to be used with:
+- Remix IDE for contract development and testing
+- Ganache for local blockchain deployment
+
+### Contract Features
+- Store sensor readings with timestamp
+- Retrieve latest reading for any sensor
+- Track reading history per sensor
+- Event emission for data storage operations
