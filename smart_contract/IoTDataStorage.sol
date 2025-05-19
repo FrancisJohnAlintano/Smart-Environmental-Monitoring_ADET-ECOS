@@ -1,131 +1,103 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// Smart contract for storing IoT sensor data
-contract IoTDataStorage {
-    // Scaling factors for decimal values
-    uint256 public constant SCALE_FACTOR = 1e6; // 6 decimal places
-
-    // Helper functions for scaling
-    function scaleValue(uint256 value) internal pure returns (uint256) {
-        return value * SCALE_FACTOR;
-    }
-
-    function unscaleValue(uint256 value) internal pure returns (uint256) {
-        return value / SCALE_FACTOR;
-    }
-
-    // Structure to store environmental sensor data
+contract EnvironmentalMonitoring {
     struct SensorData {
         uint256 timestamp;
-        uint256 co2_ppm;
-        uint256 pm25_ugm3;
-        uint256 temperature_c;
-        uint256 humidity_pct;
-        uint256 soil_moisture_pct;
-        uint256 water_ph;
-        uint256 water_turbidity_ntu;
+        string sensorId;
+        string parameterType;  // e.g., "CO2", "PM2.5", "Temperature"
+        string value;         // Store as string to handle different units
+        string unit;          // e.g., "ppm", "µg/m³", "°C"
     }
 
-    // Constants and state variables
-    uint256 public constant MAX_ENTRIES = 1000;
+    uint256 public constant MAX_ENTRIES = 1000; // Increased to handle more data points
     SensorData[] public dataRecords;
     address public owner;
 
-    // Event for data storage
+    // Valid parameter types and their units
+    mapping(string => string) public validParameters;
+
     event DataStored(
         uint256 timestamp,
-        uint256 co2_ppm,
-        uint256 pm25_ugm3,
-        uint256 temperature_c,
-        uint256 humidity_pct,
-        uint256 soil_moisture_pct,
-        uint256 water_ph,
-        uint256 water_turbidity_ntu
+        string sensorId,
+        string parameterType,
+        string value,
+        string unit
     );
 
-    // Modifier for owner-only functions
     modifier onlyOwner() {
         require(msg.sender == owner, "Not authorized");
         _;
     }
 
-    // Constructor to set owner
     constructor() {
         owner = msg.sender;
+        
+        // Initialize valid parameters and their units
+        validParameters["CO2"] = "ppm";
+        validParameters["PM2.5"] = "ugm3";
+        validParameters["Temperature"] = "C";
+        validParameters["Humidity"] = "pct";
+        validParameters["SoilMoisture"] = "pct";
+        validParameters["WaterPH"] = "pH";
+        validParameters["WaterTurbidity"] = "NTU";
     }
 
-    // Function to store environmental sensor data
     function storeData(
-        uint256 _co2_ppm,
-        uint256 _pm25_ugm3,
-        uint256 _temperature_c,
-        uint256 _humidity_pct,
-        uint256 _soil_moisture_pct,
-        uint256 _water_ph,
-        uint256 _water_turbidity_ntu
+        string memory _sensorId,
+        string memory _parameterType,
+        string memory _value
     ) public onlyOwner {
         require(dataRecords.length < MAX_ENTRIES, "Storage limit reached");
+        require(bytes(validParameters[_parameterType]).length > 0, "Invalid parameter type");
+
+        string memory unit = validParameters[_parameterType];
+        dataRecords.push(SensorData(block.timestamp, _sensorId, _parameterType, _value, unit));
         
-        // Scale and validate percentage values
-        uint256 scaledHumidity = scaleValue(_humidity_pct);
-        uint256 scaledMoisture = scaleValue(_soil_moisture_pct);
-        require(scaledHumidity <= scaleValue(100), "Humidity cannot exceed 100%");
-        require(scaledMoisture <= scaleValue(100), "Soil moisture cannot exceed 100%");
-        
-        uint256 timestamp = block.timestamp;
-        
-        // Scale all decimal values before storing
-        dataRecords.push(SensorData(
-            timestamp,
-            scaleValue(_co2_ppm),
-            scaleValue(_pm25_ugm3),
-            scaleValue(_temperature_c),
-            scaledHumidity,
-            scaledMoisture,
-            scaleValue(_water_ph),
-            scaleValue(_water_turbidity_ntu)
-        ));
-        
-        emit DataStored(
-            timestamp,
-            _co2_ppm,
-            _pm25_ugm3,
-            _temperature_c,
-            _humidity_pct,
-            _soil_moisture_pct,
-            _water_ph,
-            _water_turbidity_ntu
-        );
+        emit DataStored(block.timestamp, _sensorId, _parameterType, _value, unit);
     }
 
-    // Function to get total number of records
     function getTotalRecords() public view returns (uint256) {
         return dataRecords.length;
     }
 
-    // Function to get a specific record
     function getRecord(uint256 index) public view returns (
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256
+        uint256 timestamp,
+        string memory sensorId,
+        string memory parameterType,
+        string memory value,
+        string memory unit
     ) {
         require(index < dataRecords.length, "Index out of bounds");
         SensorData memory record = dataRecords[index];
         return (
             record.timestamp,
-            unscaleValue(record.co2_ppm),
-            unscaleValue(record.pm25_ugm3),
-            unscaleValue(record.temperature_c),
-            unscaleValue(record.humidity_pct),
-            unscaleValue(record.soil_moisture_pct),
-            unscaleValue(record.water_ph),
-            unscaleValue(record.water_turbidity_ntu)
+            record.sensorId,
+            record.parameterType,
+            record.value,
+            record.unit
         );
+    }
+
+    function getLatestRecord(string memory _parameterType) public view returns (
+        uint256 timestamp,
+        string memory sensorId,
+        string memory value,
+        string memory unit
+    ) {
+        require(bytes(validParameters[_parameterType]).length > 0, "Invalid parameter type");
+        
+        for (uint256 i = dataRecords.length; i > 0; i--) {
+            SensorData memory record = dataRecords[i-1];
+            if (keccak256(bytes(record.parameterType)) == keccak256(bytes(_parameterType))) {
+                return (
+                    record.timestamp,
+                    record.sensorId,
+                    record.value,
+                    record.unit
+                );
+            }
+        }
+        revert("No records found for this parameter type");
     }
 }
