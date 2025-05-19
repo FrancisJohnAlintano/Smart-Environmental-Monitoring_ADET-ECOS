@@ -2,27 +2,33 @@
 pragma solidity ^0.8.0;
 
 contract EnvironmentalMonitoring {
-    struct SensorData {
+    struct BatchedSensorData {
         uint256 timestamp;
         string sensorId;
-        string parameterType;  // e.g., "CO2", "PM2.5", "Temperature"
-        string value;         // Store as string to handle different units
-        string unit;          // e.g., "ppm", "µg/m³", "°C"
+        string co2;
+        string pm25;
+        string temperature;
+        string humidity;
+        string soilMoisture;
+        string waterPh;
+        string waterTurbidity;
     }
 
-    uint256 public constant MAX_ENTRIES = 1000; // Increased to handle more data points
-    SensorData[] public dataRecords;
+    uint256 public constant MAX_ENTRIES = 1000;
+    BatchedSensorData[] public batchedRecords;
     address public owner;
-
-    // Valid parameter types and their units
     mapping(string => string) public validParameters;
 
-    event DataStored(
+    event BatchedDataStored(
         uint256 timestamp,
         string sensorId,
-        string parameterType,
-        string value,
-        string unit
+        string co2,
+        string pm25,
+        string temperature,
+        string humidity,
+        string soilMoisture,
+        string waterPh,
+        string waterTurbidity
     );
 
     modifier onlyOwner() {
@@ -43,61 +49,151 @@ contract EnvironmentalMonitoring {
         validParameters["WaterTurbidity"] = "NTU";
     }
 
-    function storeData(
-        string memory _sensorId,
-        string memory _parameterType,
-        string memory _value
-    ) public onlyOwner {
-        require(dataRecords.length < MAX_ENTRIES, "Storage limit reached");
-        require(bytes(validParameters[_parameterType]).length > 0, "Invalid parameter type");
-
-        string memory unit = validParameters[_parameterType];
-        dataRecords.push(SensorData(block.timestamp, _sensorId, _parameterType, _value, unit));
+    // Helper function to format number to 2 decimal places
+    function formatDecimals(string memory _value) internal pure returns (string memory) {
+        // Convert string to bytes for manipulation
+        bytes memory value = bytes(_value);
         
-        emit DataStored(block.timestamp, _sensorId, _parameterType, _value, unit);
+        // Find decimal point position
+        uint dotPos = 0;
+        bool hasDot = false;
+        
+        for(uint i = 0; i < value.length; i++) {
+            if(value[i] == '.') {
+                dotPos = i;
+                hasDot = true;
+                break;
+            }
+        }
+        
+        // If no decimal point, add .00
+        if(!hasDot) {
+            return string(abi.encodePacked(_value, ".00"));
+        }
+        
+        // Count digits after decimal
+        uint decimals = value.length - dotPos - 1;
+        
+        if(decimals == 0) {
+            // If ends with dot, add 00
+            return string(abi.encodePacked(_value, "00"));
+        } else if(decimals == 1) {
+            // If one decimal, add 0
+            return string(abi.encodePacked(_value, "0"));
+        } else if(decimals == 2) {
+            // If two decimals, return as is
+            return _value;
+        } else {
+            // If more than two decimals, truncate to two
+            bytes memory result = new bytes(dotPos + 3);
+            for(uint i = 0; i < dotPos + 3; i++) {
+                result[i] = value[i];
+            }
+            return string(result);
+        }
     }
 
-    function getTotalRecords() public view returns (uint256) {
-        return dataRecords.length;
-    }
-
-    function getRecord(uint256 index) public view returns (
-        uint256 timestamp,
-        string memory sensorId,
-        string memory parameterType,
-        string memory value,
-        string memory unit
-    ) {
-        require(index < dataRecords.length, "Index out of bounds");
-        SensorData memory record = dataRecords[index];
-        return (
-            record.timestamp,
-            record.sensorId,
-            record.parameterType,
-            record.value,
-            record.unit
+    function storeBatchedData(
+        string memory _sensorId,
+        string memory _co2,
+        string memory _pm25,
+        string memory _temperature,
+        string memory _humidity,
+        string memory _soilMoisture,
+        string memory _waterPh,
+        string memory _waterTurbidity
+    ) public onlyOwner {
+        require(batchedRecords.length < MAX_ENTRIES, "Storage limit reached");
+        
+        // Format all values to 2 decimal places
+        string memory co2 = formatDecimals(_co2);
+        string memory pm25 = formatDecimals(_pm25);
+        string memory temperature = formatDecimals(_temperature);
+        string memory humidity = formatDecimals(_humidity);
+        string memory soilMoisture = formatDecimals(_soilMoisture);
+        string memory waterPh = formatDecimals(_waterPh);
+        string memory waterTurbidity = formatDecimals(_waterTurbidity);
+        
+        batchedRecords.push(
+            BatchedSensorData(
+                block.timestamp,
+                _sensorId,
+                co2,
+                pm25,
+                temperature,
+                humidity,
+                soilMoisture,
+                waterPh,
+                waterTurbidity
+            )
+        );
+        
+        emit BatchedDataStored(
+            block.timestamp,
+            _sensorId,
+            co2,
+            pm25,
+            temperature,
+            humidity,
+            soilMoisture,
+            waterPh,
+            waterTurbidity
         );
     }
 
-    function getLatestRecord(string memory _parameterType) public view returns (
+    function getTotalBatchedRecords() public view returns (uint256) {
+        return batchedRecords.length;
+    }
+
+    function getBatchedRecord(uint256 index) public view returns (
         uint256 timestamp,
         string memory sensorId,
-        string memory value,
-        string memory unit
+        string memory co2,
+        string memory pm25,
+        string memory temperature,
+        string memory humidity,
+        string memory soilMoisture,
+        string memory waterPh,
+        string memory waterTurbidity
     ) {
-        require(bytes(validParameters[_parameterType]).length > 0, "Invalid parameter type");
-        
-        for (uint256 i = dataRecords.length; i > 0; i--) {
-            SensorData memory record = dataRecords[i-1];
-            if (keccak256(bytes(record.parameterType)) == keccak256(bytes(_parameterType))) {
-                return (
-                    record.timestamp,
-                    record.sensorId,
-                    record.value,
-                    record.unit
-                );
-            }
-        }
-        revert("No records found for this parameter type");
+        require(index < batchedRecords.length, "Index out of bounds");
+        BatchedSensorData memory record = batchedRecords[index];
+        return (
+            record.timestamp,
+            record.sensorId,
+            record.co2,
+            record.pm25,
+            record.temperature,
+            record.humidity,
+            record.soilMoisture,
+            record.waterPh,
+            record.waterTurbidity
+        );
+    }
+
+    function getLatestBatchedRecord() public view returns (
+        uint256 timestamp,
+        string memory sensorId,
+        string memory co2,
+        string memory pm25,
+        string memory temperature,
+        string memory humidity,
+        string memory soilMoisture,
+        string memory waterPh,
+        string memory waterTurbidity
+    ) {
+        require(batchedRecords.length > 0, "No records found");
+        BatchedSensorData memory record = batchedRecords[batchedRecords.length - 1];
+        return (
+            record.timestamp,
+            record.sensorId,
+            record.co2,
+            record.pm25,
+            record.temperature,
+            record.humidity,
+            record.soilMoisture,
+            record.waterPh,
+            record.waterTurbidity
+        );
     }
 }
