@@ -13,14 +13,14 @@ else:
     print("❌ Connection failed. Ensure Ganache is running.")
 
 # Replace with your deployed contract address from Remix
-contract_address = Web3.to_checksum_address("0x6Ff48a55dfad5ab57134940Db605E20b52e7CA78")
+contract_address = Web3.to_checksum_address("0x555BbC6AD8185B306E12051D49bdBFa5F0cEBD18")
 # Replace with the address that deployed the contract (the owner)
-owner_address = Web3.to_checksum_address("0x01EfCCF4f049c32E5b09D48B22238BA17094324e")
+owner_address = Web3.to_checksum_address("0x1CB8a815F37D32b97E30CbdaECeba3C8fC1f891B")
 
 print(f"Using contract address: {contract_address}")
 print(f"Using owner address: {owner_address}")
 
-# Contract ABI from the updated smart contract
+# Simplified Contract ABI with single data parameter
 contract_abi = [
 	{
 		"inputs": [],
@@ -41,48 +41,42 @@ contract_abi = [
 				"internalType": "string",
 				"name": "sensorId",
 				"type": "string"
-			},
-			{
-				"indexed": False,
-				"internalType": "string",
-				"name": "parameterType",
-				"type": "string"
-			},
-			{
-				"indexed": False,
-				"internalType": "string",
-				"name": "value",
-				"type": "string"
-			},
-			{
-				"indexed": False,
-				"internalType": "string",
-				"name": "unit",
-				"type": "string"
 			}
 		],
-		"name": "DataStored",
+		"name": "BatchedDataStored",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "_sensorId",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_parameterType",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_value",
-				"type": "string"
+				"components": [
+					{
+						"internalType": "string",
+						"name": "sensorId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "dataType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "value",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "unit",
+						"type": "string"
+					}
+				],
+				"internalType": "struct EnvironmentalMonitoring.SensorDataInput",
+				"name": "_data",
+				"type": "tuple"
 			}
 		],
-		"name": "storeData",
+		"name": "storeBatchedData",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -95,7 +89,7 @@ contract_abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "dataRecords",
+		"name": "batchedRecords",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -109,41 +103,7 @@ contract_abi = [
 			},
 			{
 				"internalType": "string",
-				"name": "parameterType",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "value",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "unit",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_parameterType",
-				"type": "string"
-			}
-		],
-		"name": "getLatestRecord",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "sensorId",
+				"name": "dataType",
 				"type": "string"
 			},
 			{
@@ -168,31 +128,31 @@ contract_abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "getRecord",
+		"name": "getBatchedRecord",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "timestamp",
+				"name": "",
 				"type": "uint256"
 			},
 			{
 				"internalType": "string",
-				"name": "sensorId",
+				"name": "",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "parameterType",
+				"name": "",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "value",
+				"name": "",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "unit",
+				"name": "",
 				"type": "string"
 			}
 		],
@@ -201,7 +161,40 @@ contract_abi = [
 	},
 	{
 		"inputs": [],
-		"name": "getTotalRecords",
+		"name": "getLatestBatchedRecord",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalBatchedRecords",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -284,82 +277,74 @@ try:
     max_entries = contract.functions.MAX_ENTRIES().call()
     print(f"Maximum storage capacity: {max_entries} records")
     
-    # Load IoT sensor data from CSV with reduced sampling
-    df = pd.read_csv("data_simulation/iot_data.csv")
-    # Take every 3rd row to reduce data volume
-    df = df.iloc[::3, :]  
-    print(f"\nLoaded {len(df)} data points from CSV (sampling every 3rd row)")
-    print("\nFirst few rows of the data:")
+    # Load the new simplified CSV data
+    df = pd.read_csv("simple_iot_data.csv")
+    print(f"\nLoaded simplified CSV with {len(df)} rows")
+    print("\nSimplified CSV structure:")
     print(df.head())
 
-    def format_value(value):
-        """Format numeric value to string with 2 decimal places"""
-        return f"{float(value):.2f}"
-    
-    def send_iot_data(device_id, data_type, data_value):
-        """Sends IoT data to the deployed smart contract"""
+    def send_sensor_data(sensor_data):
+        """Sends simplified IoT data to the deployed smart contract"""
         try:
-            # Format the value to 2 decimal places
-            formatted_value = format_value(data_value)
+            # Create the struct tuple for the transaction
+            data_tuple = (
+                sensor_data["sensorId"],
+                sensor_data["dataType"],
+                sensor_data["value"],
+                sensor_data["unit"]
+            )
             
-            txn = contract.functions.storeData(device_id, data_type, formatted_value).transact({
+            txn = contract.functions.storeBatchedData(data_tuple).transact({
                 'from': owner_address,
-                'gas': 3000000
+                'gas': 500000  # Reduced gas for simplified data
             })
             receipt = web3.eth.wait_for_transaction_receipt(txn)
-            print(f"✅ Data Stored: {data_type} - {formatted_value}, Txn Hash: {receipt.transactionHash.hex()}")
+            print(f"✅ Data Stored: {sensor_data['dataType']} = {sensor_data['value']} {sensor_data['unit']}, Txn Hash: {receipt.transactionHash.hex()}")
             return True
         except Exception as e:
             print(f"❌ Error storing data: {str(e)}")
             return False
     
-    # Process each row and send data to blockchain
-    print("\nStoring data on blockchain...")
-    sensor_id = "ENV_MONITOR_01"
-    total_parameters = len(df) * 7  # 7 parameters per row
+    # Process each row and send simplified data to blockchain
+    print("\nStoring simplified sensor data on blockchain...")
     stored_count = 0
     
+    # Store data from the simplified CSV
     for index, row in df.iterrows():
-        # Store each parameter
-        parameters = {
-            "CO2": row["co2_ppm"],
-            "PM2.5": row["pm25_ugm3"],
-            "Temperature": row["temperature_c"],
-            "Humidity": row["humidity_pct"],
-            "SoilMoisture": row["soil_moisture_pct"],
-            "WaterPH": row["water_ph"],
-            "WaterTurbidity": row["water_turbidity_ntu"]
+        # Prepare sensor data from CSV
+        sensor_data = {
+            "sensorId": row["sensor_id"],
+            "dataType": row["data_type"],
+            "value": str(row["value"]),
+            "unit": row["unit"]
         }
         
-        for param_type, value in parameters.items():
-            success = send_iot_data(sensor_id, param_type, value)
-            stored_count += 1 if success else 0
-            print(f"Progress: {stored_count}/{total_parameters} records stored ({(stored_count/total_parameters)*100:.1f}%)")
-            
-            if not success:
-                print(f"Failed to store {param_type} data. Stopping...")
-                exit(1)
-            time.sleep(1)  # Delay to prevent flooding transactions
+        success = send_sensor_data(sensor_data)
+        if success:
+            stored_count += 1
+            print(f"Progress: {stored_count}/{len(df)} records stored ({(stored_count/len(df))*100:.1f}%)")
+        else:
+            print(f"Failed to store data for row {index}. Stopping...")
+            exit(1)
+        
+        time.sleep(1)  # Delay to prevent flooding transactions
     
     # Verify storage
-    total_records = contract.functions.getTotalRecords().call()
+    total_records = contract.functions.getTotalBatchedRecords().call()
     print(f"\nTotal records stored: {total_records}")
     
     if total_records > 0:
-        # Get the latest records for each parameter type
-        print("\nLatest readings for each parameter:")
-        parameters = ["CO2", "PM2.5", "Temperature", "Humidity", "SoilMoisture", "WaterPH", "WaterTurbidity"]
-        
-        for param in parameters:
-            try:
-                record = contract.functions.getLatestRecord(param).call()
-                print(f"\n{param}:")
-                print(f"  Timestamp: {record[0]}")
-                print(f"  Sensor ID: {record[1]}")
-                print(f"  Value: {record[2]}")
-                print(f"  Unit: {record[3]}")
-            except Exception as e:
-                print(f"Could not retrieve latest {param} reading: {str(e)}")
+        # Get the latest record
+        print("\nLatest record:")
+        try:
+            record = contract.functions.getLatestBatchedRecord().call()
+            print(f"  Timestamp: {record[0]}")
+            print(f"  Sensor ID: {record[1]}")
+            print(f"  Data Type: {record[2]}")
+            print(f"  Value: {record[3]}")
+            print(f"  Unit: {record[4]}")
+        except Exception as e:
+            print(f"Could not retrieve latest record: {str(e)}")
 
 except Exception as e:
     print(f"❌ Error: {str(e)}")
