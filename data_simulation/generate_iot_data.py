@@ -1,46 +1,30 @@
-import csv
+import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
-import random
 
-def generate_temperature_data(start_time, num_records=100):
-    data = []
-    current_time = start_time
-    
-    for _ in range(num_records):
-        # Generate temperature between 12°C and 34°C with 2 decimal precision
-        temperature = round(random.uniform(12.0, 34.0), 2)
-        
-        # Create record
-        record = {
-            'timestamp': current_time.strftime('%Y-%m-%d %H:%M:%S.%f'),
-            'sensor_id': 'TEMP_001',
-            'data_type': 'Temperature',
-            'value': temperature,
-            'unit': 'C'
-        }
-        data.append(record)
-        
-        # Increment time by 15 minutes
-        current_time += timedelta(minutes=15)
-    
-    return data
+num_records = 100  # Adjust this number as needed
 
-def save_to_csv(data, filename):
-    fieldnames = ['timestamp', 'sensor_id', 'data_type', 'value', 'unit']
-    
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(data)
+# Example for Environmental Monitoring
+data = []
 
-if __name__ == "__main__":
-    # Start time (24 hours ago from current time)
-    start_time = datetime.now() - timedelta(days=1)
-    
-    # Generate data
-    iot_data = generate_temperature_data(start_time, num_records=96)  # 96 records = 24 hours of 15-min intervals
-    
-    # Save to CSV using absolute path
-    csv_path = 'simple_iot_data.csv'
-    save_to_csv(iot_data, csv_path)
-    print(f"IoT data has been generated and saved to {csv_path}")
+for _ in range(num_records):
+    record = {
+        "timestamp": datetime.now() - timedelta(minutes=np.random.randint(0, 1440)),  # Random timestamp in the last 24 hours
+        "device_id": f"ENV{np.random.randint(100, 999)}",  # Random device ID
+        "temperature": round(np.random.uniform(20.0, 35.0), 1),  # Temperature in Celsius
+        "humidity": round(np.random.uniform(30.0, 80.0), 1),  # Humidity percentage
+        "co2_level": np.random.randint(300, 1500),  # CO2 levels in ppm
+        "air_quality": round(np.random.uniform(0, 500), 1)  # Air quality index
+    }
+    data.append(record)
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Save dataset
+df.to_csv("environmental_data.csv", index=False)
+df.to_json("environmental_data.json", orient="records")
+
+# Display first few rows
+print("Generated Environmental Monitoring Data:")
+print(df.head())

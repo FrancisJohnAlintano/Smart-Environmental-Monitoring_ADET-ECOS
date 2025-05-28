@@ -13,14 +13,14 @@ else:
     print("❌ Connection failed. Ensure Ganache is running.")
 
 # Replace with your deployed contract address from Remix
-contract_address = Web3.to_checksum_address("0x555BbC6AD8185B306E12051D49bdBFa5F0cEBD18")
+contract_address = Web3.to_checksum_address("0xB2F15D4a01F8977C369fcfC300bd1F1e46686b2C")
 # Replace with the address that deployed the contract (the owner)
-owner_address = Web3.to_checksum_address("0x1CB8a815F37D32b97E30CbdaECeba3C8fC1f891B")
+owner_address = Web3.to_checksum_address("0x7794122Ec9c2a50FE00E05a3090755a4AD5A992b")
 
 print(f"Using contract address: {contract_address}")
 print(f"Using owner address: {owner_address}")
 
-# Simplified Contract ABI with single data parameter
+# Contract ABI
 contract_abi = [
 	{
 		"inputs": [],
@@ -39,44 +39,44 @@ contract_abi = [
 			{
 				"indexed": False,
 				"internalType": "string",
-				"name": "sensorId",
+				"name": "deviceId",
+				"type": "string"
+			},
+			{
+				"indexed": False,
+				"internalType": "string",
+				"name": "dataType",
+				"type": "string"
+			},
+			{
+				"indexed": False,
+				"internalType": "string",
+				"name": "dataValue",
 				"type": "string"
 			}
 		],
-		"name": "BatchedDataStored",
+		"name": "DataStored",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "sensorId",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "dataType",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "value",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "unit",
-						"type": "string"
-					}
-				],
-				"internalType": "struct EnvironmentalMonitoring.SensorDataInput",
-				"name": "_data",
-				"type": "tuple"
+				"internalType": "string",
+				"name": "_deviceId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataValue",
+				"type": "string"
 			}
 		],
-		"name": "storeBatchedData",
+		"name": "storeData",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -89,7 +89,7 @@ contract_abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "batchedRecords",
+		"name": "dataRecords",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -98,7 +98,7 @@ contract_abi = [
 			},
 			{
 				"internalType": "string",
-				"name": "sensorId",
+				"name": "deviceId",
 				"type": "string"
 			},
 			{
@@ -108,12 +108,7 @@ contract_abi = [
 			},
 			{
 				"internalType": "string",
-				"name": "value",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "unit",
+				"name": "dataValue",
 				"type": "string"
 			}
 		],
@@ -128,17 +123,12 @@ contract_abi = [
 				"type": "uint256"
 			}
 		],
-		"name": "getBatchedRecord",
+		"name": "getRecord",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			},
 			{
 				"internalType": "string",
@@ -161,40 +151,7 @@ contract_abi = [
 	},
 	{
 		"inputs": [],
-		"name": "getLatestBatchedRecord",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getTotalBatchedRecords",
+		"name": "getTotalRecords",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -230,25 +187,6 @@ contract_abi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"name": "validParameters",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	}
 ]
 
@@ -273,78 +211,98 @@ try:
     else:
         print(f"✅ Owner verification successful")
     
-    # Verify storage space
-    max_entries = contract.functions.MAX_ENTRIES().call()
-    print(f"Maximum storage capacity: {max_entries} records")
-    
-    # Load the new simplified CSV data
-    df = pd.read_csv("simple_iot_data.csv")
-    print(f"\nLoaded simplified CSV with {len(df)} rows")
-    print("\nSimplified CSV structure:")
+    # Load the environmental data CSV
+    df = pd.read_csv("environmental_data.csv")
+    print(f"\nLoaded CSV with {len(df)} rows")
+    print("\nData structure:")
     print(df.head())
 
-    def send_sensor_data(sensor_data):
-        """Sends simplified IoT data to the deployed smart contract"""
+    def send_environmental_data(device_id, data_type, value):
+        """Sends environmental data to the deployed smart contract"""
         try:
-            # Create the struct tuple for the transaction
-            data_tuple = (
-                sensor_data["sensorId"],
-                sensor_data["dataType"],
-                sensor_data["value"],
-                sensor_data["unit"]
-            )
-            
-            txn = contract.functions.storeBatchedData(data_tuple).transact({
+            txn = contract.functions.storeData(device_id, data_type, str(value)).transact({
                 'from': owner_address,
-                'gas': 500000  # Reduced gas for simplified data
+                'gas': 500000
             })
             receipt = web3.eth.wait_for_transaction_receipt(txn)
-            print(f"✅ Data Stored: {sensor_data['dataType']} = {sensor_data['value']} {sensor_data['unit']}, Txn Hash: {receipt.transactionHash.hex()}")
+            print(f"✅ Data Stored: {data_type} = {value}, Txn Hash: {receipt.transactionHash.hex()}")
             return True
         except Exception as e:
             print(f"❌ Error storing data: {str(e)}")
             return False
     
-    # Process each row and send simplified data to blockchain
-    print("\nStoring simplified sensor data on blockchain...")
+    # Process each row and send data to blockchain
+    print("\nStoring environmental data on blockchain...")
     stored_count = 0
     
-    # Store data from the simplified CSV
+    # Process each environmental parameter separately
     for index, row in df.iterrows():
-        # Prepare sensor data from CSV
-        sensor_data = {
-            "sensorId": row["sensor_id"],
-            "dataType": row["data_type"],
-            "value": str(row["value"]),
-            "unit": row["unit"]
-        }
-        
-        success = send_sensor_data(sensor_data)
+        # Temperature
+        success = send_environmental_data(
+            row["device_id"],
+            "Temperature",
+            f"{row['temperature']}°C"
+        )
         if success:
             stored_count += 1
-            print(f"Progress: {stored_count}/{len(df)} records stored ({(stored_count/len(df))*100:.1f}%)")
         else:
-            print(f"Failed to store data for row {index}. Stopping...")
+            print(f"Failed to store temperature data for row {index}. Stopping...")
             exit(1)
         
+        # Humidity
+        success = send_environmental_data(
+            row["device_id"],
+            "Humidity",
+            f"{row['humidity']}%"
+        )
+        if success:
+            stored_count += 1
+        else:
+            print(f"Failed to store humidity data for row {index}. Stopping...")
+            exit(1)
+        
+        # CO2 Level
+        success = send_environmental_data(
+            row["device_id"],
+            "CO2",
+            f"{row['co2_level']}ppm"
+        )
+        if success:
+            stored_count += 1
+        else:
+            print(f"Failed to store CO2 data for row {index}. Stopping...")
+            exit(1)
+        
+        # Air Quality
+        success = send_environmental_data(
+            row["device_id"],
+            "AirQuality",
+            str(row['air_quality'])
+        )
+        if success:
+            stored_count += 1
+        else:
+            print(f"Failed to store air quality data for row {index}. Stopping...")
+            exit(1)
+        
+        print(f"Progress: {(index + 1)}/{len(df)} records processed")
         time.sleep(1)  # Delay to prevent flooding transactions
     
     # Verify storage
-    total_records = contract.functions.getTotalBatchedRecords().call()
+    total_records = contract.functions.getTotalRecords().call()
     print(f"\nTotal records stored: {total_records}")
     
     if total_records > 0:
-        # Get the latest record
-        print("\nLatest record:")
+        # Get the first record
+        print("\nFirst record:")
         try:
-            record = contract.functions.getLatestBatchedRecord().call()
+            record = contract.functions.getRecord(0).call()
             print(f"  Timestamp: {record[0]}")
-            print(f"  Sensor ID: {record[1]}")
+            print(f"  Device ID: {record[1]}")
             print(f"  Data Type: {record[2]}")
             print(f"  Value: {record[3]}")
-            print(f"  Unit: {record[4]}")
         except Exception as e:
-            print(f"Could not retrieve latest record: {str(e)}")
+            print(f"Could not retrieve record: {str(e)}")
 
 except Exception as e:
     print(f"❌ Error: {str(e)}")

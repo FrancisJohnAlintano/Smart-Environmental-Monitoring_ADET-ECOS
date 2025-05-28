@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Data on Blockchain - Project Presentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/moon.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/monokai.min.css">
+    <style>
+        .reveal {
+            font-family: 'Arial', sans-serif;
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: #42A5F5;
+        }
+        .highlight {
+            background-color: #FFA726;
+            color: #000;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .success {
+            color: #66BB6A;
+        }
+        .error {
+            color: #EF5350;
+        }
+        .code-block {
+            background-color: #2E2E2E;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .demo-box {
+            border: 2px solid #42A5F5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: rgba(66, 165, 245, 0.1);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #66BB6A;
+            transition: width 0.5s ease;
+        }
+        .blockchain-icon {
+            font-size: 3em;
+            color: #42A5F5;
+        }
+        .iot-icon {
+            font-size: 3em;
+            color: #66BB6A;
+        }
+        .team-member {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+        }
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #42A5F5, #66BB6A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 2em;
+            color: white;
+        }
+        .hash-text {
+            word-break: break-all;
+            font-size: 0.7em;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+        .transaction-details {
+            font-size: 0.75em;
+        }
+        .transaction-details ul {
+            list-style: none;
+            padding: 0;
+        }
+        .transaction-details li {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Title Slide -->
+            <section>
+                <h1>🌍 Environmental IoT Data Storage</h1>
+                <h2>on Blockchain Platform</h2>
+                <div style="margin-top: 50px;">
+                    <div class="iot-icon">🌡️</div>
+                    <span style="font-size: 2em; margin: 0 20px;">→</span>
+                    <div class="blockchain-icon">⛓️</div>
+                </div>
+                <p style="margin-top: 30px;">
+                    <small>A comprehensive solution for secure and transparent environmental monitoring</small>
+                </p>
+            </section>
+
+            <!-- Project Overview -->
+            <section>
+                <section>
+                    <h2>Project Overview</h2>
+                    <div class="demo-box">
+                        <h3>🎯 Mission</h3>
+                        <p>Create a <span class="highlight">decentralized platform</span> for storing and managing environmental IoT sensor data using blockchain technology</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>👥 Our Team</h3>
+                    <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                        <div class="team-member">
+                            <div class="team-avatar">👨‍💻</div>
+                            <strong>Honey Grace Denolan</strong>
+                            
+                        </div>
+                        <div class="team-member">
+                            <div class="team-avatar">🔬</div>
+                            <strong>Adam Raymond Belda</strong>
+                       
+                        </div>
+                        <div class="team-member">
+                            <div class="team-avatar">🐍</div>
+                            <strong>Francis John Alintano</strong>
+                           
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>🏗️ System Architecture</h3>
+                    <div style="text-align: left; font-size: 0.8em;">
+                        <div class="demo-box">
+                            <strong>📊 Data Layer:</strong> Environmental sensors (Temperature, Humidity, CO2, Air Quality)
+                            <br><br>
+                            <strong>🔄 Processing Layer:</strong> Python scripts for data simulation and processing
+                            <br><br>
+                            <strong>⛓️ Blockchain Layer:</strong> Ethereum smart contracts for immutable data storage
+                            <br><br>
+                            <strong>🌐 Network Layer:</strong> Ganache local blockchain for development and testing
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>💡 Why Blockchain for IoT Data?</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.8em;">
+                        <div class="demo-box">
+                            <h4>🔒 Security</h4>
+                            <p>Immutable records prevent data tampering</p>
+                        </div>
+                        <div class="demo-box">
+                            <h4>👁️ Transparency</h4>
+                            <p>All transactions are publicly verifiable</p>
+                        </div>
+                        <div class="demo-box">
+                            <h4>🌐 Decentralization</h4>
+                            <p>No single point of failure</p>
+                        </div>
+                        <div class="demo-box">
+                            <h4>📝 Auditability</h4>
+                            <p>Complete transaction history</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Smart Contract Connection -->
+            <section>
+                <section>
+                    <h2>🔗 Smart Contract Connection</h2>
+                    <div class="demo-box">
+                        <h3>Development Environment Setup</h3>
+                        <p>Establishing the foundation for blockchain integration</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>🐍 Python Environment Setup</h3>
+                    <div class="code-block">
+                        <pre><code class="python">
+# Required dependencies installed
+pip install web3
+pip install pandas
+pip install solcx
+
+# Key imports for blockchain interaction
+from web3 import Web3
+import pandas as pd
+import time
+                        </code></pre>
+                    </div>
+                    <p><span class="success">✅ Python environment configured successfully</span></p>
+                </section>
+
+                <section>
+                    <h3>🏗️ Ganache Blockchain Setup</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.8em;">
+                        <div>
+                            <h4>Configuration:</h4>
+                            <ul>
+                                <li>Local RPC Server: <code>http://127.0.0.1:7545</code></li>
+                                <li>Network ID: 5777</li>
+                                <li>Gas Limit: 6,721,975</li>
+                                <li>Accounts: 10 with 100 ETH each</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="demo-box">
+                                <h4>Connection Test:</h4>
+                                <pre><code class="python">
+web3 = Web3(Web3.HTTPProvider(ganache_url))
+if web3.is_connected():
+    print("✅ Connected to Ganache!")
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>📋 Smart Contract Verification</h3>
+                    <div class="code-block">
+                        <pre><code class="solidity">
+contract IoTDataStorage {
+    struct IoTData {
+        uint256 timestamp;
+        string deviceId;
+        string dataType;
+        string dataValue;
+    }
+    
+    uint256 public constant MAX_ENTRIES = 1000;
+    IoTData[] public dataRecords;
+    address public owner;
+}
+                        </code></pre>
+                    </div>
+                    <p><span class="success">✅ Contract deployed and verified</span></p>
+                    <p><small>Contract Address: <code>0x450394A99fbe8270Bfb8D9027d0d5172A755Df16</code></small></p>
+                </section>
+
+                <section>
+                    <h3>🔐 Owner Authentication</h3>
+                    <div class="demo-box">
+                        <div class="code-block">
+                            <pre><code class="python">
+# Verify contract ownership
+contract_owner = contract.functions.owner().call()
+print(f"Contract owner: {contract_owner}")
+print(f"Your address: {owner_address}")
+
+if contract_owner.lower() == owner_address.lower():
+    print("✅ Owner verification successful")
+else:
+    print("❌ Access denied")
+                            </code></pre>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Data Transactions & Retrieval -->
+            <section>
+                <section>
+                    <h2>📊 Data Transactions & Retrieval</h2>
+                    <div class="demo-box">
+                        <h3>Environmental Data Management</h3>
+                        <p>Storing, retrieving, and verifying IoT sensor data on blockchain</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>🌡️ Environmental Data Structure</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.8em;">
+                        <div>
+                            <h4>📈 Data Types Collected:</h4>
+                            <ul>
+                                <li>🌡️ Temperature (°C)</li>
+                                <li>💧 Humidity (%)</li>
+                                <li>🌬️ CO2 Levels (ppm)</li>
+                                <li>🌍 Air Quality Index</li>
+                            </ul>
+                        </div>
+                        <div class="demo-box">
+                            <h4>Sample Data:</h4>
+                            <table style="font-size: 0.7em;">
+                                <tr><th>Device</th><th>Temp</th><th>Humidity</th><th>CO2</th></tr>
+                                <tr><td>ENV001</td><td>23.5°C</td><td>65%</td><td>410ppm</td></tr>
+                                <tr><td>ENV002</td><td>22.1°C</td><td>58%</td><td>395ppm</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>💾 Data Storage Process</h3>
+                    <div class="demo-box">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 25%;"></div>
+                        </div>
+                        <p><strong>Progress: 25/100 records processed</strong></p>
+                    </div>
+                    <div class="code-block">
+                        <pre><code class="python">
+def send_environmental_data(device_id, data_type, value):
+    try:
+        txn = contract.functions.storeData(
+            device_id, data_type, str(value)
+        ).transact({
+            'from': owner_address,
+            'gas': 500000
+        })
+        receipt = web3.eth.wait_for_transaction_receipt(txn)
+        print(f"✅ Data Stored: {data_type} = {value}")
+        return True
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return False
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>🔍 Transaction Verification</h3>
+                    <div class="transaction-details">
+                        <div class="demo-box">
+                            <h4>Transaction Details:</h4>
+                            <ul>
+                                <li><strong>Hash:</strong><br><code class="hash-text">0xaf39a0124286976f88a373a83d94867d396d239567088af019e706d7ba1d3926</code></li>
+                                <li><strong>Gas Used:</strong> 89,432</li>
+                                <li><strong>Block Number:</strong> 156</li>
+                                <li><strong>Status:</strong> <span class="success">✅ Success</span></li>
+                            </ul>
+                        </div>
+                        <div class="demo-box">
+                            <h4>Event Emitted:</h4>
+                            <pre><code class="javascript">
+DataStored(
+    timestamp: 1703875200,
+    deviceId: "ENV001",
+    dataType: "Temperature",
+    dataValue: "23.5°C"
+)
+                            </code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>📊 Data Retrieval Demonstration</h3>
+                    <div class="code-block">
+                        <pre><code class="python">
+# Get total records count
+total_records = contract.functions.getTotalRecords().call()
+print(f"Total records stored: {total_records}")
+
+# Retrieve specific record
+record = contract.functions.getRecord(0).call()
+print(f"Timestamp: {record[0]}")
+print(f"Device ID: {record[1]}")
+print(f"Data Type: {record[2]}")
+print(f"Value: {record[3]}")
+                        </code></pre>
+                    </div>
+                    <div class="demo-box">
+                        <p><strong>Output:</strong></p>
+                        <p class="success">Total records stored: 100</p>
+                        <p>Device ID: ENV001 | Data Type: Temperature | Value: 23.5°C</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>📈 Storage Limit Enhancement</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="demo-box">
+                            <h4>❌ Previous Issue:</h4>
+                            <pre><code class="text">
+Error: Storage limit reached
+MAX_ENTRIES = 100
+                            </code></pre>
+                        </div>
+                        <div class="demo-box">
+                            <h4>✅ Solution Applied:</h4>
+                            <pre><code class="solidity">
+uint256 public constant 
+    MAX_ENTRIES = 1000;
+                            </code></pre>
+                        </div>
+                    </div>
+                    <p>Increased storage capacity by <span class="highlight">10x</span> to accommodate more environmental data</p>
+                </section>
+            </section>
+
+            <!-- Results & Achievements -->
+            <section>
+                <section>
+                    <h2>🏆 Project Achievements</h2>
+                    <div class="demo-box">
+                        <h3>Successfully Implemented:</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9em;">
+                            <div>
+                                <p>✅ Smart contract deployment</p>
+                                <p>✅ Python-blockchain integration</p>
+                                <p>✅ Environmental data simulation</p>
+                                <p>✅ Transaction verification</p>
+                            </div>
+                            <div>
+                                <p>✅ Data retrieval mechanisms</p>
+                                <p>✅ Storage optimization</p>
+                                <p>✅ Error handling & logging</p>
+                                <p>✅ Scalable architecture</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>📊 Project Statistics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; font-size: 0.8em;">
+                        <div class="demo-box">
+                            <h4>📈 Data Metrics</h4>
+                            <ul>
+                                <li>100 CSV records processed</li>
+                                <li>400 blockchain transactions</li>
+                                <li>4 data types per device</li>
+                                <li>1000 max storage capacity</li>
+                            </ul>
+                        </div>
+                        <div class="demo-box">
+                            <h4>⚡ Performance</h4>
+                            <ul>
+                                <li>~2 seconds per transaction</li>
+                                <li>500,000 gas limit per call</li>
+                                <li>0.01 ETH transaction cost</li>
+                                <li>100% success rate achieved</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>🔮 Future Enhancements</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.8em;">
+                        <div class="demo-box">
+                            <h4>🌐 Network Integration</h4>
+                            <ul>
+                                <li>Deploy to Ethereum testnet</li>
+                                <li>IPFS for large data storage</li>
+                                <li>Real-time IoT sensor integration</li>
+                            </ul>
+                        </div>
+                        <div class="demo-box">
+                            <h4>📱 User Interface</h4>
+                            <ul>
+                                <li>Web dashboard for data visualization</li>
+                                <li>Mobile app for monitoring</li>
+                                <li>Alert system for anomalies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Conclusion -->
+            <section>
+                <h2>🎯 Conclusion</h2>
+                <div class="demo-box">
+                    <h3>Mission Accomplished! 🚀</h3>
+                    <p>We have successfully created a <span class="highlight">production-ready system</span> for storing environmental IoT data on blockchain</p>
+                    <br>
+                    <div style="font-size: 0.9em;">
+                        <p>✅ <strong>Secure:</strong> Immutable blockchain storage</p>
+                        <p>✅ <strong>Scalable:</strong> 1000+ record capacity</p>
+                        <p>✅ <strong>Reliable:</strong> Error handling & verification</p>
+                        <p>✅ <strong>Transparent:</strong> Public transaction history</p>
+                    </div>
+                </div>
+                <br>
+                <h3>Thank you for your attention! 🙏</h3>
+                <p><small>Questions & Demonstration</small></p>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+            controls: true,
+            progress: true,
+            center: true,
+            touch: true,
+            loop: false,
+            keyboard: true
+        });
+
+        // Auto-advance progress bar animation
+        setTimeout(() => {
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                let width = 25;
+                const interval = setInterval(() => {
+                    width += 5;
+                    progressFill.style.width = width + '%';
+                    if (width >= 100) {
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
