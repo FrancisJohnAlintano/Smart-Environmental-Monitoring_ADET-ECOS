@@ -72,7 +72,7 @@ environmental_monitoring/
 
 2. **Install Python dependencies**
    ```bash
-   pip install web3 pandas numpy datetime
+   pip install web3 pandas numpy
    ```
 
 3. **Install and setup Ganache**
